@@ -8,5 +8,6 @@
         android:id="@+id/item_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:scaleType="centerCrop"/>
+        android:scaleType="fitXY"
+        android:transitionName="share_img"/>
 </RelativeLayout>

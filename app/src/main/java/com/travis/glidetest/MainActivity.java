@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
-    private List<String> list = new ArrayList<String>();
+    private ArrayList<String> list = new ArrayList<String>();
 
     private RecyclerAdapter adapter;
 

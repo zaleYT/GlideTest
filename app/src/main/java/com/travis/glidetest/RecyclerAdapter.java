@@ -1,8 +1,12 @@
 package com.travis.glidetest;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
@@ -17,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,14 +35,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static final String TAG = "RecyclerAdapter";
 
-    private List<String> list;
+    private ArrayList<String> list;
     private Context context;
     private RecyclerView recyclerView;
 
     //private Set<LoadCacheAsyncTask> loadCacheTask;
     //private Set<LoadImageAsyncTask> loadImageTasks;
 
-    public RecyclerAdapter(Context context, List<String> list, RecyclerView recyclerView) {
+    public RecyclerAdapter(Context context, ArrayList<String> list, RecyclerView recyclerView) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -55,13 +60,31 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
         ImageView imageView = holder.imageView;
 
         //imageView.setTag(position);
         //imageView.setImageBitmap(null);
         //imageView.setBackgroundResource(R.color.colorgray);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= 21) {
+                    Intent intent = new Intent(context, PagerViewActivity.class);
+
+                    intent.putExtra("current_image", position);
+                    intent.putStringArrayListExtra("image_path_list", list);
+
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                            (Activity) view.getContext(), view, "share_img");
+
+                    view.getContext().startActivity(intent, options.toBundle());
+                }
+            }
+        });
+
         Log.d(TAG, "positon:" +position);
         Glide.with(context)
                 .load(list.get(position))
