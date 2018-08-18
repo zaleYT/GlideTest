@@ -39,17 +39,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private Context context;
     private RecyclerView recyclerView;
 
-    //private Set<LoadCacheAsyncTask> loadCacheTask;
-    //private Set<LoadImageAsyncTask> loadImageTasks;
 
     public RecyclerAdapter(Context context, ArrayList<String> list, RecyclerView recyclerView) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
-
-        //loadCacheTask = new HashSet<LoadCacheAsyncTask>();
-
-        //loadImageTasks = new HashSet<LoadImageAsyncTask>();
     }
 
     @NonNull
@@ -67,7 +61,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         //imageView.setTag(position);
         //imageView.setImageBitmap(null);
         //imageView.setBackgroundResource(R.color.colorgray);
-
+        imageView.setTransitionName(position + "#"); // 设置shared transitionName
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +72,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                     intent.putStringArrayListExtra("image_path_list", list);
 
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
-                            (Activity) view.getContext(), view, "share_img");
+                            (Activity) view.getContext(), view, view.getTransitionName());
 
                     view.getContext().startActivity(intent, options.toBundle());
                 }
@@ -102,13 +96,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-
-        /*public void loadImage(String url, int index) {
-
-            LoadCacheAsyncTask task = new LoadCacheAsyncTask();
-            loadCacheTask.add(task);
-            task.execute(list.get(index));
-        }*/
 
         public ViewHolder(View itemView) {
             super(itemView);

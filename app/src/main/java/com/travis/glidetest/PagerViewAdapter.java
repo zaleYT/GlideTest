@@ -42,6 +42,7 @@ public class PagerViewAdapter extends PagerAdapter {
 
         View view = View.inflate(context, R.layout.pager_view_image_item, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.vp_item_image);
+        imageView.setTransitionName(position + "#");// 设置shared transitionName
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

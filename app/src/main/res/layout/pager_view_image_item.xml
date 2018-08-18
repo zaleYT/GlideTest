@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     android:id="@+id/vp_item_image"
     android:scaleType="fitCenter"
-    android:transitionName="share_img">
-
+    >
+<!--android:transitionName="share_img"-->
 </ImageView>
