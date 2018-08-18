@@ -18,11 +18,11 @@ import java.util.List;
 public class PagerViewAdapter extends PagerAdapter {
 
     private List<String> list;
-    private Context context;
+    private PagerViewActivity context;
 
     private ImageOnClick imageOnClick;
 
-    public PagerViewAdapter(Context context, List<String> list, ImageOnClick callback) {
+    public PagerViewAdapter(PagerViewActivity context, List<String> list, ImageOnClick callback) {
         this.list = list;
         this.context = context;
 
@@ -54,6 +54,8 @@ public class PagerViewAdapter extends PagerAdapter {
         Glide.with(context).load(list.get(position)).into(imageView);
 
         container.addView(imageView);
+
+        context.startPostponedEnterTransition();// 开始transition
 
         return view;
     }

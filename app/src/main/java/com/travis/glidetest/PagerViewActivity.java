@@ -25,6 +25,7 @@ public class PagerViewActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         setContentView(R.layout.pager_view_image);
+        postponeEnterTransition(); // 延迟执行transition
 
         viewPager = findViewById(R.id.view_pager);
 
