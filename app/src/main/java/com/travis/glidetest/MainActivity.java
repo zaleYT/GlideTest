@@ -1,6 +1,8 @@
 package com.travis.glidetest;
 
 import android.Manifest;
+import android.app.SharedElementCallback;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,12 +16,14 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int EXTERNAL_STORAGE_REQ_CODE = 15 ;
 
+    static final String EXTRA_START_INDEX = "extra_start_index";
+    static final String EXTRA_CURRENT_INDEX = "extra_current_index";
+
     String[] projImage = {
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATA, // 路径
@@ -48,12 +55,52 @@ public class MainActivity extends AppCompatActivity {
     };
 
     Uri mImangeUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    private Bundle mTemReenterState;
 
+
+    private final SharedElementCallback mCallback = new SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+
+            if (mTemReenterState != null){
+                int startPos = mTemReenterState.getInt(EXTRA_START_INDEX);
+                int currentPos = mTemReenterState.getInt(EXTRA_CURRENT_INDEX);
+
+                if (startPos != currentPos){
+                    //String newTransitionName = currentPos+"#";
+                    ImageView newSharedElement = recyclerView.findViewWithTag(currentPos);
+                    String newTransitionName = newSharedElement.getTransitionName();
+                    if (newSharedElement != null){
+                        names.clear();
+                        names.add(newTransitionName);
+
+                        sharedElements.clear();
+                        sharedElements.put(newTransitionName, newSharedElement);
+                    }
+                    mTemReenterState = null;
+                }
+            }else {
+                View navigationBar = findViewById(android.R.id.navigationBarBackground);
+                View statusBar = findViewById(android.R.id.statusBarBackground);
+                if (navigationBar != null){
+                    names.add(navigationBar.getTransitionName());
+                    sharedElements.put(navigationBar.getTransitionName(), navigationBar);
+                }
+
+                if (statusBar != null){
+                    names.add(statusBar.getTransitionName());
+                    sharedElements.put(statusBar.getTransitionName(), statusBar);
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setExitSharedElementCallback(mCallback);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -98,9 +145,32 @@ public class MainActivity extends AppCompatActivity {
         cursor.close();
     }
 
-    public void loadImage(View view) {
-        String url = "http://p1.pstatp.com/large/166200019850062839d3";
-        Glide.with(this).load(url).into(imageView);
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+
+        mTemReenterState = new Bundle(data.getExtras());
+
+        int startIndex = mTemReenterState.getInt(EXTRA_START_INDEX);
+        int currentIndex = mTemReenterState.getInt(EXTRA_CURRENT_INDEX);
+
+        if (startIndex != currentIndex){
+            recyclerView.scrollToPosition(currentIndex);
+        }
+
+        postponeEnterTransition();
+
+        recyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                recyclerView.requestLayout();
+
+                startPostponedEnterTransition();
+
+                return true;
+            }
+        });
     }
 
     private void getRuntimePermission() {

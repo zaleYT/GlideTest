@@ -68,7 +68,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 if (Build.VERSION.SDK_INT >= 21) {
                     Intent intent = new Intent(context, PagerViewActivity.class);
 
-                    intent.putExtra("current_image", position);
+                    intent.putExtra("start_image", position);
                     intent.putStringArrayListExtra("image_path_list", list);
 
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
@@ -84,6 +84,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 .load(list.get(position))
                 .placeholder(R.color.colorgray)
                 .into(imageView);
+
+        imageView.setTag(position);
     }
 
 

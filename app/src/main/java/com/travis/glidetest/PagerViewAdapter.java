@@ -3,6 +3,7 @@ package com.travis.glidetest;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,10 +18,14 @@ import java.util.List;
 
 public class PagerViewAdapter extends PagerAdapter {
 
+    public static final String TAG = "PagerViewAdapter";
+
     private List<String> list;
     private PagerViewActivity context;
 
     private ImageOnClick imageOnClick;
+
+    private ImageView imageView;
 
     public PagerViewAdapter(PagerViewActivity context, List<String> list, ImageOnClick callback) {
         this.list = list;
@@ -40,8 +45,11 @@ public class PagerViewAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
         //return super.instantiateItem(container, position);
 
+        // 从log看，position为当前position的前一个或者后一个position
+        // 向前滑动的话，position就是当前位置的前一个，向后滑，就当前位置的后一个
+
         View view = View.inflate(context, R.layout.pager_view_image_item, null);
-        ImageView imageView = (ImageView) view.findViewById(R.id.vp_item_image);
+        imageView = (ImageView) view.findViewById(R.id.vp_item_image);
         imageView.setTransitionName(position + "#");// 设置shared transitionName
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +69,12 @@ public class PagerViewAdapter extends PagerAdapter {
     }
 
     @Override
+    public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        super.setPrimaryItem(container, position, object);
+        imageView = (ImageView)object;
+    }
+
+    @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         //super.destroyItem(container, position, object);
 
@@ -72,7 +86,9 @@ public class PagerViewAdapter extends PagerAdapter {
         return view == object;
     }
 
-    public
+    public ImageView getImageView(){
+        return imageView;
+    }
 
     interface ImageOnClick{
         void onClickCallBack(int position);
